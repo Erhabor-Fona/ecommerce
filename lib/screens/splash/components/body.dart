@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/constants.dart';
-import 'package:shop_app/models/Product.dart';
 import 'package:shop_app/screens/sign_in/sign_in_screen.dart';
 import 'package:shop_app/size_config.dart';
 import 'package:shop_app/variables.dart';
@@ -92,7 +91,7 @@ class _BodyState extends State<Body> {
                     DefaultButton(
                       text: "Continue",
                       press: () {
-                        makeGetRequestForProperties();
+                        // makeGetRequestForProperties();
                         Navigator.pushNamed(context, SignInScreen.routeName);
                       },
                     ),
@@ -120,76 +119,6 @@ class _BodyState extends State<Body> {
     );
   }
 }
-
-Future<List> makeGetRequestForProperties() async {
-  SharedPreferences accesstoken = await SharedPreferences.getInstance();
-
-  String authorization = accesstoken.getString('accessToken');
-  print(authorization);
-  String properties = '/properties';
-  Response response = await get(url + properties, headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'Authorization': 'Bearer $authorization'
-  });
-  // sample info available in response
-  int statusCode = response.statusCode;
-  Map<String, String> headers = response.headers;
-  String contentType = headers['content-type'];
-  String json = response.body;
-
-  print(json);
-  var numberOfProperties = jsonDecode(response.body);
-  final length = numberOfProperties.length;
-  for (var i = 0; i < length; i++) {
-    String decodedName = jsonDecode(json)[i]['name'].toString();
-    //print(decodedName);
-    //print(length);
-    var decodedImage = jsonDecode(json)[i]['images'];
-    List<String> images = List<String>.from(decodedImage);
-    var decodedId = jsonDecode(json)[i]['id'].toString();
-    // print(decodedImage);
-    var decodedDescription = jsonDecode(json)[i]['description'].toString();
-    var decodedPrice = jsonDecode(json)[i]['pricing']['price'].toString();
-    var decodedLiked = jsonDecode(json)[i]['liked'];
-    var decodedTags = jsonDecode(json)[i]['tags'];
-    var decodedLikesCount = jsonDecode(json)[i]['likes_count'];
-
-    if (decodedLiked == true) {
-      print(favouriteProduct);
-      favouriteProduct.add(Product(
-        images: images,
-        id: decodedId,
-        description: decodedDescription,
-        name: decodedName,
-        price: decodedPrice,
-        liked: decodedLiked,
-        likes_count: decodedLikesCount,
-        // tags: decodedTags
-      ));
-    }
-
-    demoProducts.add(Product(
-      images: images,
-      id: decodedId,
-      description: decodedDescription,
-      name: decodedName,
-      price: decodedPrice,
-      liked: decodedLiked,
-      likes_count: decodedLikesCount,
-      // tags: decodedTags
-    ));
-  }
-
-  // print(demoProducts);
-  print(favouriteProduct);
-  // print(statusCode);
-  // return response.body;
-  // TODO convert json to object...
-}
-
-List<Product> demoProducts = [];
-List<Product> favouriteProduct = [];
 
 Future getProperties() async {
   String properties = '/properties';

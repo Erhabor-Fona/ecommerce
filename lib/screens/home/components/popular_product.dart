@@ -1,133 +1,168 @@
-// import 'dart:convert';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/components/product_card.dart';
-import 'package:shop_app/screens/splash/components/body.dart';
+import 'package:shop_app/models/Product.dart';
+import 'package:shop_app/screens/home/components/section_title.dart';
+import 'package:shop_app/size_config.dart';
+import 'package:shop_app/variables.dart';
 
-// import 'package:shop_app/variables.dart';
-
-import '../../../size_config.dart';
-import 'section_title.dart';
-
-// List<Product> demoProducts = [];
-// List<Product> favouriteProduct = [];
+import 'categories.dart';
+import 'discount_banner.dart';
+import 'home_header.dart';
+import 'special_offers.dart';
 
 @override
 void initState() {
   // makeGetRequestForProperties();
 }
 
-class PopularProducts extends StatelessWidget {
+class PopularProducts extends StatefulWidget {
+  @override
+  _PopularProductsState createState() => _PopularProductsState();
+}
+
+class _PopularProductsState extends State<PopularProducts> {
+  Future<List<Product>> makeGetRequestForProperties() async {
+    SharedPreferences accesstoken = await SharedPreferences.getInstance();
+
+    String authorization = accesstoken.getString('accessToken');
+    print(authorization);
+    String endpoint = '/properties';
+    Response response = await get(url + endpoint, headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $authorization'
+    });
+    // sample info available in response
+    int statusCode = response.statusCode;
+    Map<String, String> headers = response.headers;
+    String contentType = headers['content-type'];
+    String json = response.body;
+
+    print(json);
+    var jsonData = jsonDecode(response.body);
+    List<Product> properties = [];
+    for (var p in jsonData) {
+      String decodedName = p['name'].toString();
+      var decodedImage = p['images'];
+      List<String> images = List<String>.from(decodedImage);
+      var decodedId = p['id'].toString();
+      var decodedDescription = p['description'].toString();
+      var decodedPrice = p['pricing']['price'].toString();
+      var decodedLiked = p['liked'];
+      var decodedTags = p['tags'];
+      var decodedLikesCount = p['likes_count'];
+
+      // if (decodedLiked == true) {
+      //   print(favouriteProduct);
+      //   favouriteProduct.add(Product(
+      //     images: images,
+      //     id: decodedId,
+      //     description: decodedDescription,
+      //     name: decodedName,
+      //     price: decodedPrice,
+      //     liked: decodedLiked,
+      //     likes_count: decodedLikesCount,
+      //     // tags: decodedTags
+      //   ));
+      // }
+
+      properties.add(Product(
+        images: images,
+        id: decodedId,
+        description: decodedDescription,
+        name: decodedName,
+        price: decodedPrice,
+        liked: decodedLiked,
+        likes_count: decodedLikesCount,
+        // tags: decodedTags
+      ));
+    }
+
+    return properties;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Padding(
-          padding:
-              EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(20)),
-          child: SectionTitle(title: "Popular Products", press: () {}),
-        ),
-        SizedBox(height: getProportionateScreenWidth(20)),
-        SingleChildScrollView(
+    return Scaffold(
+      body: Container(
+        child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              ...List.generate(
-                demoProducts.length,
-                (index) {
-                  // if (demoProducts[index].isPopular)
-                  return ProductCard(product: demoProducts[index]);
-
-                  return SizedBox
-                      .shrink(); // here by default width and height is 0
-                },
+              SizedBox(height: getProportionateScreenHeight(20)),
+              HomeHeader(),
+              SizedBox(height: getProportionateScreenWidth(10)),
+              DiscountBanner(),
+              Categories(),
+              SpecialOffers(),
+              SizedBox(height: getProportionateScreenWidth(30)),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: getProportionateScreenWidth(20)),
+                child: SectionTitle(title: "Popular Products", press: () {}),
               ),
-              SizedBox(width: getProportionateScreenWidth(20)),
+              SizedBox(height: getProportionateScreenWidth(20)),
+              FutureBuilder(
+                  future: makeGetRequestForProperties(),
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    if (snapshot.data == null) {
+                      return Container(
+                        child: Center(child: Text("Loading...")),
+                      );
+                    } else {
+                      return SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            ...List.generate(
+                              snapshot.data.length,
+                              (index) {
+                                // if (demoProducts[index].isPopular)
+                                return ProductCard(
+                                    product: snapshot.data[index]);
+
+                                return SizedBox
+                                    .shrink(); // here by default width and height is 0
+                              },
+                            ),
+                            SizedBox(width: getProportionateScreenWidth(20)),
+                          ],
+                        ),
+                      );
+                    }
+                  }
+
+                  // Column(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   crossAxisAlignment: CrossAxisAlignment.stretch,
+                  //   children: [
+                  //     ...List.generate(
+                  //       demoProducts.length,
+                  //       (index) {
+                  //         // if (demoProducts[index].isPopular)
+                  //         return ProductCard(product: demoProducts[index]);
+                  //
+                  //         return SizedBox
+                  //             .shrink(); // here by default width and height is 0
+                  //       },
+                  //     ),
+                  //     SizedBox(width: getProportionateScreenWidth(20)),
+                  //   ],
+                  // ),
+                  ),
+              //)
             ],
           ),
-        )
-      ],
+        ),
+      ),
     );
   }
 }
-
-// makeGetRequestForProperties() async {
-//   SharedPreferences accesstoken = await SharedPreferences.getInstance();
-//
-//   String authorization = accesstoken.getString('accessToken');
-//   print(authorization);
-//   String properties = '/properties';
-//   Response response = await get(url + properties, headers: {
-//     'Content-Type': 'application/json',
-//     'Accept': 'application/json',
-//     'Authorization': 'Bearer $authorization'
-//   });
-//   // sample info available in response
-//   int statusCode = response.statusCode;
-//   Map<String, String> headers = response.headers;
-//   String contentType = headers['content-type'];
-//   String json = response.body;
-//
-//   print(json);
-//   var numberOfProperties = jsonDecode(response.body);
-//   final length = numberOfProperties.length;
-//   for (var i = 0; i < length; i++) {
-//     String decodedName = jsonDecode(json)[i]['name'].toString();
-//     //print(decodedName);
-//     //print(length);
-//     var decodedImage = jsonDecode(json)[i]['images'];
-//     List<String> images = List<String>.from(decodedImage);
-//     var decodedId = jsonDecode(json)[i]['id'].toString();
-//     // print(decodedImage);
-//     var decodedDescription = jsonDecode(json)[i]['description'].toString();
-//     var decodedPrice = jsonDecode(json)[i]['pricing']['price'].toString();
-//     var decodedLiked = jsonDecode(json)[i]['liked'];
-//     var decodedTags = jsonDecode(json)[i]['tags'];
-//     var decodedLikesCount = jsonDecode(json)[i]['likes_count'];
-//
-//     if (decodedLiked == true) {
-//       print(favouriteProduct);
-//       favouriteProduct.add(Product(
-//         images: images,
-//         id: decodedId,
-//         description: decodedDescription,
-//         name: decodedName,
-//         price: decodedPrice,
-//         liked: decodedLiked,
-//         likes_count: decodedLikesCount,
-//         // tags: decodedTags
-//       ));
-//     }
-//
-//     demoProducts.add(Product(
-//       images: images,
-//       id: decodedId,
-//       description: decodedDescription,
-//       name: decodedName,
-//       price: decodedPrice,
-//       liked: decodedLiked,
-//       likes_count: decodedLikesCount,
-//       // tags: decodedTags
-//     ));
-//   }
-//
-//   // print(demoProducts);
-//   print(favouriteProduct);
-//   // print(statusCode);
-//
-//   // TODO convert json to object...
-// }
-
-//   Future getProperties() async {
-//     String properties = '/properties';
-//     Response response = await get(url + properties);
-//     if (response.statusCode == 200) {
-//       String data = response.body;
-//       return jsonDecode(data);
-//     } else {
-//       print(response.statusCode);
-//     }
-// }
