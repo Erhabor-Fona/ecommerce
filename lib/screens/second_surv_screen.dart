@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/components/re_useable_card.dart';
 import 'package:shop_app/components/re_useable_column.dart';
 import 'package:shop_app/components/survey_button.dart';
@@ -69,77 +70,91 @@ class _SecondSurveyPageState extends State<SecondSurveyPage> {
                   child: Row(
                     children: <Widget>[
                       Expanded(
-                        child: ReusableCard(
-                            cardChild: Column(
-                              children: [
-                                UsableColum(
-                                  icon: Icons.house,
-                                  child: SvgPicture.asset(
-                                      "assets/icons/balcony.svg"),
-                                  text: 'FLAT',
-                                  secondChild: Checkbox(
-                                    checkColor: Colors.white,
-                                    activeColor: Colors.blue,
-                                    value: this.flat,
-                                    onChanged: (bool value) {
-                                      setState(() {
-                                        selected >= 5
-                                            ? value = false
-                                            : this.flat = value;
-                                        if (flat == true) {
-                                          selected++;
-                                          choices.add('flat');
-                                        } else
-                                          selected--;
-                                      });
-                                      print(flat);
-                                    },
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              flat = true;
+                            });
+                          },
+                          child: ReusableCard(
+                              cardChild: Column(
+                                children: [
+                                  UsableColum(
+                                    icon: Icons.house,
+                                    child: SvgPicture.asset(
+                                        "assets/icons/balcony.svg"),
+                                    text: 'FLAT',
+                                    secondChild: Checkbox(
+                                      checkColor: Colors.white,
+                                      activeColor: Colors.blue,
+                                      value: this.flat,
+                                      onChanged: (bool value) {
+                                        setState(() {
+                                          selected >= 5
+                                              ? value = false
+                                              : this.flat = value;
+                                          if (flat == true) {
+                                            selected++;
+                                            choices.add('flat');
+                                          } else
+                                            selected--;
+                                        });
+                                        print(flat);
+                                      },
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            colour: selectBuilding == Building.flat
-                                ? maleCardColor = kActiveCardColour
-                                : maleCardColor = kInactiveCardColour
-                            // : maleCardColor = kInactiveCardColour,
-                            ),
+                                ],
+                              ),
+                              colour: selectBuilding == Building.flat
+                                  ? maleCardColor = kActiveCardColour
+                                  : maleCardColor = kInactiveCardColour
+                              // : maleCardColor = kInactiveCardColour,
+                              ),
+                        ),
                       ),
                       Expanded(
-                        child: ReusableCard(
-                          cardChild: UsableColum(
-                            icon: Icons.house,
-                            child: SvgPicture.asset(
-                              "assets/icons/bungalow.svg",
-                              height: 100,
-                              width: 100,
-                              color: kBottomContainerColour,
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              duplex = true;
+                            });
+                          },
+                          child: ReusableCard(
+                            cardChild: UsableColum(
+                              icon: Icons.house,
+                              child: SvgPicture.asset(
+                                "assets/icons/bungalow.svg",
+                                height: 100,
+                                width: 100,
+                                color: kBottomContainerColour,
+                              ),
+                              text: 'DUPLEX',
+                              secondChild: Checkbox(
+                                checkColor: Colors.white,
+                                activeColor: Colors.blue,
+                                value: this.duplex,
+                                onChanged: (bool value) {
+                                  setState(
+                                    () {
+                                      selected >= 5
+                                          ? value = false
+                                          : this.duplex = value;
+                                      if (duplex == true) {
+                                        choices.add('duplex');
+                                        selected++;
+                                        print(choices);
+                                      } else
+                                        selected--;
+                                    },
+                                  );
+                                },
+                              ),
                             ),
-                            text: 'DUPLEX',
-                            secondChild: Checkbox(
-                              checkColor: Colors.white,
-                              activeColor: Colors.blue,
-                              value: this.duplex,
-                              onChanged: (bool value) {
-                                setState(
-                                  () {
-                                    selected >= 5
-                                        ? value = false
-                                        : this.duplex = value;
-                                    if (duplex == true) {
-                                      choices.add('duplex');
-                                      selected++;
-                                      print(choices);
-                                    } else
-                                      selected--;
-                                  },
-                                );
-                              },
-                            ),
+                            colour: selectBuilding == Building.duplex
+                                ? femaleCardColor = kActiveCardColour
+                                : femaleCardColor = kInactiveCardColour,
+                            // : femaleCardColor = kInactiveCardColour,
                           ),
-                          colour: selectBuilding == Building.duplex
-                              ? femaleCardColor = kActiveCardColour
-                              : femaleCardColor = kInactiveCardColour,
-                          // : femaleCardColor = kInactiveCardColour,
                         ),
                       ),
                     ],
@@ -149,34 +164,36 @@ class _SecondSurveyPageState extends State<SecondSurveyPage> {
                   child: Row(
                     children: <Widget>[
                       Expanded(
-                        child: ReusableCard(
-                          cardChild: UsableColum(
-                            child:
-                                SvgPicture.asset("assets/icons/bungalow.svg"),
-                            icon: Icons.house,
-                            text: 'SELF CONTAIN',
-                            secondChild: Checkbox(
-                              checkColor: Colors.white,
-                              activeColor: Colors.blue,
-                              value: this.selfContain,
-                              onChanged: (bool value) {
-                                setState(() {
-                                  selected >= 5
-                                      ? value = false
-                                      : this.selfContain = value;
-                                  if (selfContain == true) {
-                                    choices.add('selfCzontain');
-                                    selected++;
-                                    print(choices);
-                                  } else
-                                    selected--;
-                                });
-                              },
+                        child: GestureDetector(
+                          child: ReusableCard(
+                            cardChild: UsableColum(
+                              child:
+                                  SvgPicture.asset("assets/icons/bungalow.svg"),
+                              icon: Icons.house,
+                              text: 'SELF CONTAIN',
+                              secondChild: Checkbox(
+                                checkColor: Colors.white,
+                                activeColor: Colors.blue,
+                                value: this.selfContain,
+                                onChanged: (bool value) {
+                                  setState(() {
+                                    selected >= 5
+                                        ? value = false
+                                        : this.selfContain = value;
+                                    if (selfContain == true) {
+                                      choices.add('selfcontain');
+                                      selected++;
+                                      print(choices);
+                                    } else
+                                      selected--;
+                                  });
+                                },
+                              ),
                             ),
+                            colour: selectBuilding == Building.selfcontain
+                                ? maleCardColor = kActiveCardColour
+                                : maleCardColor = kInactiveCardColour,
                           ),
-                          colour: selectBuilding == Building.selfcontain
-                              ? maleCardColor = kActiveCardColour
-                              : maleCardColor = kInactiveCardColour,
                         ),
                       ),
                       Expanded(
@@ -217,33 +234,40 @@ class _SecondSurveyPageState extends State<SecondSurveyPage> {
                   child: Row(
                     children: <Widget>[
                       Expanded(
-                        child: ReusableCard(
-                          cardChild: UsableColum(
-                            child:
-                                SvgPicture.asset("assets/icons/bungalow.svg"),
-                            icon: Icons.house,
-                            text: 'ESTATE',
-                            secondChild: Checkbox(
-                              checkColor: Colors.white,
-                              activeColor: Colors.blue,
-                              value: this.estate,
-                              onChanged: (bool value) {
-                                setState(() {
-                                  selected >= 5
-                                      ? value = false
-                                      : this.estate = value;
-                                  if (estate == true) {
-                                    choices.add('estate');
-                                    selected++;
-                                  } else
-                                    selected--;
-                                });
-                              },
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              estate = true;
+                            });
+                          },
+                          child: ReusableCard(
+                            cardChild: UsableColum(
+                              child:
+                                  SvgPicture.asset("assets/icons/bungalow.svg"),
+                              icon: Icons.house,
+                              text: 'ESTATE',
+                              secondChild: Checkbox(
+                                checkColor: Colors.white,
+                                activeColor: Colors.blue,
+                                value: this.estate,
+                                onChanged: (bool value) {
+                                  setState(() {
+                                    selected >= 5
+                                        ? value = false
+                                        : this.estate = value;
+                                    if (estate == true) {
+                                      choices.add('estate');
+                                      selected++;
+                                    } else
+                                      selected--;
+                                  });
+                                },
+                              ),
                             ),
+                            colour: selectBuilding == Building.estate
+                                ? maleCardColor = kActiveCardColour
+                                : maleCardColor = kInactiveCardColour,
                           ),
-                          colour: selectBuilding == Building.estate
-                              ? maleCardColor = kActiveCardColour
-                              : maleCardColor = kInactiveCardColour,
                         ),
                       ),
                       Expanded(
@@ -306,15 +330,22 @@ class _SecondSurveyPageState extends State<SecondSurveyPage> {
   }
 
   _makePostRequest() async {
+    SharedPreferences accesstoken = await SharedPreferences.getInstance();
+    String authorization = accesstoken.getString('accessToken');
     // set up POST request arguments
     //String url = 'https://test.davidsmiles.xyz/users/603e554a7cf3b16fdf6e3655';
     String secondSurvey = '/users/603e554a7cf3b16fdf6e3655';
-    Map<String, String> headers = {"Content-type": "application/json"};
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+    };
     Map toJson() => {'tags_of_interest': choices};
     String send = jsonEncode(toJson());
     // make POST request
-    Response response =
-        await put(url + secondSurvey, headers: headers, body: send);
+    Response response = await put(
+      url + secondSurvey,
+      headers: headers,
+      body: send,
+    );
     // check the status code for the result
     int statusCode = response.statusCode;
     // this API passes back the id of the new item added to the body

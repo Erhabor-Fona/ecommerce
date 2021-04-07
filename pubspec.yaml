@@ -36,7 +36,9 @@ dependencies:
   #connectivity: ^0.4.3+2
   cached_network_image: ^2.5.1
   flutter_facebook_login: ^1.2.0
-  firebase_auth: ^0.20.0+1
+  #firebase_auth: ^0.20.0+1
+#  firebase_core: ^1.0.2
+#  firebase_auth: ^0.15.3
   flare_flutter:
     git:
       url: git://github.com/2d-inc/Flare-Flutter.git

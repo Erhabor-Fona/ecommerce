@@ -12,7 +12,7 @@ class StartupScreen extends StatelessWidget {
       body: AnimatedSplash(
         imagePath: 'assets/images/unsplash6.png',
         home: SplashScreen(),
-        duration: 3000,
+        duration: 5000, //in milliseconds
         type: AnimatedSplashType.StaticDuration,
       ),
     );

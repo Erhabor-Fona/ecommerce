@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "704366362399",
+    "project_id": "flat-mate-24f55",
+    "storage_bucket": "flat-mate-24f55.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:704366362399:android:7d2d7085698d12eba3ba2a",
+        "android_client_info": {
+          "package_name": "com.example.shop_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "704366362399-g50kt8vt97m8vf5lnbrbhrveifkdi8k9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCas3WP8uMDoYUYNVY4TAJ_dHk-RVWFLV0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "704366362399-g50kt8vt97m8vf5lnbrbhrveifkdi8k9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

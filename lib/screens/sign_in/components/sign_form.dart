@@ -3,12 +3,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shop_app/components/bottom_nav_bar.dart';
 import 'package:shop_app/components/custom_surfix_icon.dart';
 import 'package:shop_app/components/form_error.dart';
 import 'package:shop_app/components/loading.dart';
 import 'package:shop_app/helper/keyboard.dart';
 import 'package:shop_app/screens/forgot_password/forgot_password_screen.dart';
-import 'package:shop_app/screens/survey.dart';
 import 'package:shop_app/variables.dart';
 
 import '../../../components/default_button.dart';
@@ -28,6 +28,7 @@ class _SignFormState extends State<SignForm> {
   bool invisible = true;
   bool loading = false;
   String userId = "";
+  String accessToken = "";
   final List<String> errors = [];
 
   void addError({String error}) {
@@ -65,8 +66,10 @@ class _SignFormState extends State<SignForm> {
 
   void getData() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
+    SharedPreferences accesstoken = await SharedPreferences.getInstance();
     setState(() {
       userId = pref.getString('userId');
+      accessToken = accesstoken.getString('accessToken');
     });
   }
 
@@ -120,29 +123,7 @@ class _SignFormState extends State<SignForm> {
                       }
 
                       Future<int> st1 = _makePostRequest();
-                      // if (st1 == 200) {
-                      //   Navigator.pushNamed(context, FirstSurveyPage.routeName);
-                      //   print("success");
-                      // } else {
-                      //   Navigator.pushNamed(context, SignUpScreen.routeName);
-                      //   print("failed");
-                      // }
-                    }
-                    // statusCode == 200
-                    //     ? Navigator.pushNamed(context, FirstSurveyPage.routeName)
-                    //     : Navigator.pushNamed(context, SignUpScreen.routeName);
-                    // if (statusCode == 200) {
-                    //   //Navigator.pushNamed(context, FirstSurveyPage.routeName);
-                    //   Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //       builder: (context) {
-                    //         return FirstSurveyPage();
-                    //       },
-                    //     ),
-                    //   );
-                    // }
-                    ),
+                    }),
               ],
             ),
           );
@@ -240,7 +221,7 @@ class _SignFormState extends State<SignForm> {
 
     // this API passes back the id of the new item added to the body
     String body = response.body;
-
+    var access_token = jsonDecode(body)['access_token'];
     // {
     //   "title": "Hello",
     //   "body": "body text",
@@ -249,15 +230,32 @@ class _SignFormState extends State<SignForm> {
     // }
     print(body);
     print(userId);
+    print(accessToken);
     if (statusCode == 200) {
+      SharedPreferences accesstoken = await SharedPreferences.getInstance();
+      accesstoken.setString('accessToken', access_token);
       setState(() {
         loading = true;
       });
-      Navigator.pushNamed(context, FirstSurveyPage.routeName);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return CustomNavBar();
+          },
+        ),
+      );
+      // Navigator.pushNamed(context, HomeScreen.routeName);
 
       print("success");
+      print(accessToken);
       removeError(error: kWrongEmailError);
-    } else {
+    }
+    // if (statusCode == 200) {
+    //   SharedPreferences pref = await SharedPreferences.getInstance();
+    //   pref.setString('userId', id);
+    // }
+    else {
       // Navigator.pushNamed(context, SignUpScreen.routeName);
       print("failed");
       addError(error: kWrongEmailError);

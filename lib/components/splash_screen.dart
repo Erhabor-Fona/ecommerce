@@ -85,11 +85,15 @@ class _AnimatedSplashState extends State<AnimatedSplash>
       backgroundColor: kStartupScaffoldColor,
       body: FadeTransition(
         opacity: _animation,
-        child: Center(
-          child: Image.asset(
-            _imagePath,
-            fit: BoxFit.fill,
+        child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage(_imagePath), fit: BoxFit.cover),
           ),
+          // child: Image.asset(
+          //   _imagePath,
+          //   fit: BoxFit.cover,
+          // ),
         ),
       ),
     );

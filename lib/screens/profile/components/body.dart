@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shop_app/constants.dart';
 import 'package:shop_app/screens/Account/account.dart';
 import 'package:shop_app/screens/Policy/policy.dart';
-import 'package:shop_app/screens/sign_in/sign_in_screen.dart';
+import 'package:shop_app/screens/survey.dart';
 
 import 'profile_menu.dart';
 import 'profile_pic.dart';
@@ -103,7 +103,7 @@ class _BodyState extends State<Body> {
                 context,
                 MaterialPageRoute(
                   builder: (context) {
-                    return SignInScreen();
+                    return FirstSurveyPage();
                   },
                 ),
               );

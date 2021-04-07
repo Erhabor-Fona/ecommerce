@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shop_app/components/custom_surfix_icon.dart';
 import 'package:shop_app/components/default_button.dart';
 import 'package:shop_app/components/form_error.dart';
-import 'package:shop_app/screens/sign_in/sign_in_screen.dart';
+import 'package:shop_app/screens/survey.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -53,7 +53,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
             text: "continue",
             press: () {
               if (_formKey.currentState.validate()) {
-                Navigator.pushNamed(context, SignInScreen.routeName);
+                Navigator.pushNamed(context, FirstSurveyPage.routeName);
                 print(firstName + lastName + phoneNumber + address);
               }
             },

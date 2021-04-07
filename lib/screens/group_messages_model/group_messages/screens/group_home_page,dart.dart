@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/components/coustom_bottom_nav_bar.dart';
-import 'package:shop_app/enums.dart';
 import 'package:shop_app/screens/group_messages_model/group_messages/components/body.dart';
 
 class GroupHomePage extends StatefulWidget {
@@ -12,9 +10,8 @@ class GroupHomePage extends StatefulWidget {
 class _GroupHomePageState extends State<GroupHomePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Body(),
-        bottomNavigationBar:
-            CustomBottomNavBar(selectedMenu: MenuState.message));
+    return Scaffold(body: Body()
+        //bottomNavigationBar: CustomBottomNavBar(selectedMenu: MenuState.message),
+        );
   }
 }

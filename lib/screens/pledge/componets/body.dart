@@ -1,31 +1,28 @@
 import 'package:flutter/material.dart';
 
-class Body extends StatefulWidget {
-  @override
-  _BodyState createState() => _BodyState();
-}
+import '../../../size_config.dart';
+//import 'categories.dart';
+//import 'discount_banner.dart';
+import 'home_header.dart';
+import 'popular_product.dart';
+//import 'special_offers.dart';
 
-class _BodyState extends State<Body> {
+class Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
+    return SafeArea(
+      child: SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Center(
-              child: Container(
-                child: CircleAvatar(
-                  radius: 55.0,
-                  backgroundImage: AssetImage('assets/icons/favourite.png'),
-                ),
-              ),
-            ),
-            Text(
-              'Your Favourite Property Will Appear Here',
-              textAlign: TextAlign.center,
-            )
+          children: [
+            SizedBox(height: getProportionateScreenHeight(20)),
+            HomeHeader(),
+            SizedBox(height: getProportionateScreenWidth(10)),
+            //DiscountBanner(),
+            //Categories(),
+            //SpecialOffers(),
+            SizedBox(height: getProportionateScreenWidth(30)),
+            PopularProducts(),
+            SizedBox(height: getProportionateScreenWidth(30)),
           ],
         ),
       ),

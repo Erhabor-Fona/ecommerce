@@ -1,7 +1,10 @@
 import 'dart:convert';
 
+//import 'package:shop_app/screens/sign_in/components/sign_form.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/constants.dart';
 import 'package:shop_app/models/Product.dart';
 import 'package:shop_app/screens/sign_in/sign_in_screen.dart';
@@ -19,6 +22,7 @@ class Body extends StatefulWidget {
 
 class _BodyState extends State<Body> {
   int currentPage = 0;
+  String authorization;
   List<Map<String, String>> splashData = [
     {
       "text": "Welcome to Flat Mate, Let’s Find you a building!",
@@ -34,6 +38,19 @@ class _BodyState extends State<Body> {
       "image": "assets/images/undraw3.png"
     },
   ];
+  @override
+  void initState() {
+    // TODO: implement initState
+    getData();
+  }
+
+  void getData() async {
+    SharedPreferences accesstoken = await SharedPreferences.getInstance();
+    setState(() {
+      authorization = accesstoken.getString('accessToken');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -75,7 +92,7 @@ class _BodyState extends State<Body> {
                     DefaultButton(
                       text: "Continue",
                       press: () {
-                        _makeGetRequest();
+                        makeGetRequestForProperties();
                         Navigator.pushNamed(context, SignInScreen.routeName);
                       },
                     ),
@@ -104,237 +121,75 @@ class _BodyState extends State<Body> {
   }
 }
 
-List<Product> demoProducts = [];
-_makeGetRequest() async {
-  // make GET request
+Future<List> makeGetRequestForProperties() async {
+  SharedPreferences accesstoken = await SharedPreferences.getInstance();
+
+  String authorization = accesstoken.getString('accessToken');
+  print(authorization);
   String properties = '/properties';
-  Response response = await get(url + properties);
+  Response response = await get(url + properties, headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'Authorization': 'Bearer $authorization'
+  });
   // sample info available in response
   int statusCode = response.statusCode;
   Map<String, String> headers = response.headers;
   String contentType = headers['content-type'];
   String json = response.body;
-  // print(json);
+
+  print(json);
   var numberOfProperties = jsonDecode(response.body);
   final length = numberOfProperties.length;
   for (var i = 0; i < length; i++) {
     String decodedName = jsonDecode(json)[i]['name'].toString();
-    print(decodedName);
-    print(length);
+    //print(decodedName);
+    //print(length);
     var decodedImage = jsonDecode(json)[i]['images'];
     List<String> images = List<String>.from(decodedImage);
     var decodedId = jsonDecode(json)[i]['id'].toString();
     // print(decodedImage);
     var decodedDescription = jsonDecode(json)[i]['description'].toString();
-    var decodedPrice = jsonDecode(json)[1]['price'].toString();
-    demoProducts.add(Product(
+    var decodedPrice = jsonDecode(json)[i]['pricing']['price'].toString();
+    var decodedLiked = jsonDecode(json)[i]['liked'];
+    var decodedTags = jsonDecode(json)[i]['tags'];
+    var decodedLikesCount = jsonDecode(json)[i]['likes_count'];
+
+    if (decodedLiked == true) {
+      print(favouriteProduct);
+      favouriteProduct.add(Product(
         images: images,
         id: decodedId,
         description: decodedDescription,
         name: decodedName,
-        price: decodedPrice));
+        price: decodedPrice,
+        liked: decodedLiked,
+        likes_count: decodedLikesCount,
+        // tags: decodedTags
+      ));
+    }
+
+    demoProducts.add(Product(
+      images: images,
+      id: decodedId,
+      description: decodedDescription,
+      name: decodedName,
+      price: decodedPrice,
+      liked: decodedLiked,
+      likes_count: decodedLikesCount,
+      // tags: decodedTags
+    ));
   }
 
-  print(demoProducts);
-  //demoProducts = [
-  // Product(
-  //   id: 1,
-  //   images: [
-  //     "assets/images/product3.png",
-  //     "assets/images/product3.png",
-  //     "assets/images/product3.png",
-  //     "assets/images/product3.png",
-  //   ],
-  //   colors: [
-  //     // Color(0xFFF6625E),
-  //     // Color(0xFF836DB8),
-  //     // Color(0xFFDECB9C),
-  //     // Colors.white,
-  //   ],
-  //   name: "Duplex™",
-  //   // price: 64.99,
-  //   description: description,
-  //   // rating: 4.8,
-  //   // isFavourite: true,
-  //   // isPopular: true,
-  // ),
-  // Product(
-  //   id: 2,
-  //   images: [
-  //     "assets/images/product2.png",
-  //   ],
-  //   colors: [
-  //     // Color(0xFFF6625E),
-  //     // Color(0xFF836DB8),
-  //     // Color(0xFFDECB9C),
-  //     // Colors.white,
-  //   ],
-  //   name: "Bungalow",
-  //   // price: 50.5,
-  //   description: description,
-  //   // rating: 4.1,
-  //   // isPopular: true,
-  // ),
-  // Product(
-  //   id: 3,
-  //   images: [
-  //     "assets/images/product1.png",
-  //   ],
-  //   colors: [
-  //     // Color(0xFFF6625E),
-  //     // Color(0xFF836DB8),
-  //     // Color(0xFFDECB9C),
-  //     // Colors.white,
-  //   ],
-  //   name: "PentHouse",
-  //   // price: 36.55,
-  //   description: description,
-  //   // rating: 4.1,
-  //   // isFavourite: true,
-  //   // isPopular: true,
-  // ),
-  // Product(
-  //   id: 4,
-  //   images: [
-  //     "assets/images/product3.png",
-  //   ],
-  //   colors: [
-  //     // Color(0xFFF6625E),
-  //     // Color(0xFF836DB8),
-  //     // Color(0xFFDECB9C),
-  //     // Colors.white,
-  //   ],
-  //   name: "building X",
-  //   // price: 20.20,
-  //   description: description,
-  //   // rating: 4.1,
-  //   // isFavourite: true,
-  // ),
-  // Product(
-  //   id: 5,
-  //   images: [
-  //     "assets/images/product7.png",
-  //   ],
-  //   colors: [
-  //     // Color(0xFFF6625E),
-  //     // Color(0xFF836DB8),
-  //     // Color(0xFFDECB9C),
-  //     // Colors.white,
-  //   ],
-  //   name: "building2",
-  //   // price: 50.5,
-  //   description: description,
-  //   // rating: 4.1,
-  //   // isPopular: true,
-  // ),
-  // Product(
-  //   id: 6,
-  //   images: [
-  //     "assets/images/product8.png",
-  //   ],
-  //   colors: [
-  //     // Color(0xFFF6625E),
-  //     // Color(0xFF836DB8),
-  //     // Color(0xFFDECB9C),
-  //     // Colors.white,
-  //   ],
-  //   name: "building3",
-  //   // price: 50.5,
-  //   description: description,
-  //   // rating: 4.1,
-  //   // isPopular: true,
-  // ),
-  // Product(
-  //   id: 7,
-  //   images: [
-  //     "assets/images/product9.png",
-  //   ],
-  //   colors: [
-  //     // Color(0xFFF6625E),
-  //     // Color(0xFF836DB8),
-  //     // Color(0xFFDECB9C),
-  //     // Colors.white,
-  //   ],
-  //   name: "building4",
-  //   // price: 50.5,
-  //   description: description,
-  //   // rating: 4.1,
-  //   // isPopular: true,
-  // ),
-  // Product(
-  //   id: 8,
-  //   images: [
-  //     "assets/images/product10.png",
-  //   ],
-  //   colors: [
-  //     // Color(0xFFF6625E),
-  //     // Color(0xFF836DB8),
-  //     // Color(0xFFDECB9C),
-  //     // Colors.white,
-  //   ],
-  //   name: "building5",
-  //   // price: 50.5,
-  //   description: description,
-  //   // rating: 4.1,
-  //   // isPopular: true,
-  // ),
-  // Product(
-  //   id: 9,
-  //   images: [
-  //     "assets/images/product11.png",
-  //   ],
-  //   colors: [
-  //     // Color(0xFFF6625E),
-  //     // Color(0xFF836DB8),
-  //     // Color(0xFFDECB9C),
-  //     // Colors.white,
-  //   ],
-  //   name: "building6",
-  //   // price: 50.5,
-  //   description: description,
-  //   // rating: 4.1,
-  //   // isPopular: true,
-  // ),
-  // Product(
-  //   id: 10,
-  //   images: [
-  //     "assets/images/product13.png",
-  //   ],
-  //   colors: [
-  //     // Color(0xFFF6625E),
-  //     // Color(0xFF836DB8),
-  //     // Color(0xFFDECB9C),
-  //     // Colors.white,
-  //   ],
-  //   name: "building11",
-  //   // price: 50.5,
-  //   description: description,
-  //   // rating: 4.1,
-  //   // isPopular: true,
-  // ),
-  // Product(
-  //   id: 11,
-  //   images: [
-  //     "assets/images/product1.png",
-  //   ],
-  //   colors: [
-  //     // Color(0xFFF6625E),
-  //     // Color(0xFF836DB8),
-  //     // Color(0xFFDECB9C),
-  //     // Colors.white,
-  //   ],
-  //   name: "building12",
-  //   // price: 50.5,
-  //   description: description,
-  //   // rating: 4.1,
-  //   // isPopular: true,
-  // ),
-  // ];
-
+  // print(demoProducts);
+  print(favouriteProduct);
   // print(statusCode);
-
+  // return response.body;
   // TODO convert json to object...
 }
+
+List<Product> demoProducts = [];
+List<Product> favouriteProduct = [];
 
 Future getProperties() async {
   String properties = '/properties';
