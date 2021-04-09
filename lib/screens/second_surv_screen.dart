@@ -49,13 +49,15 @@ class _SecondSurveyPageState extends State<SecondSurveyPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 SizedBox(height: SizeConfig.screenHeight * 0.04),
-                Text(
-                  'Help Us Know Your Preference',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: getProportionateScreenWidth(18),
-                      letterSpacing: 1.5),
+                SingleChildScrollView(
+                  child: Text(
+                    'Help Us Know Your Preference',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.black54,
+                        fontSize: getProportionateScreenWidth(18),
+                        letterSpacing: 1.5),
+                  ),
                 ),
                 Text(
                   'Select Only 5 Choices',
@@ -165,6 +167,11 @@ class _SecondSurveyPageState extends State<SecondSurveyPage> {
                     children: <Widget>[
                       Expanded(
                         child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selfContain == true;
+                            });
+                          },
                           child: ReusableCard(
                             cardChild: UsableColum(
                               child:
@@ -197,34 +204,41 @@ class _SecondSurveyPageState extends State<SecondSurveyPage> {
                         ),
                       ),
                       Expanded(
-                        child: ReusableCard(
-                          cardChild: UsableColum(
-                            child:
-                                SvgPicture.asset("assets/icons/bungalow.svg"),
-                            icon: Icons.house,
-                            text: 'STORY BUILDING',
-                            secondChild: Checkbox(
-                              checkColor: Colors.white,
-                              activeColor: Colors.blue,
-                              value: this.storyBuilding,
-                              onChanged: (bool value) {
-                                setState(() {
-                                  selected >= 5
-                                      ? value = false
-                                      : this.storyBuilding = value;
-                                  if (storyBuilding == true) {
-                                    choices.add('storyBuilding');
-                                    selected++;
-                                    print(choices);
-                                  } else
-                                    selected--;
-                                });
-                              },
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              storyBuilding == true;
+                            });
+                          },
+                          child: ReusableCard(
+                            cardChild: UsableColum(
+                              child:
+                                  SvgPicture.asset("assets/icons/bungalow.svg"),
+                              icon: Icons.house,
+                              text: 'STORY BUILDING',
+                              secondChild: Checkbox(
+                                checkColor: Colors.white,
+                                activeColor: Colors.blue,
+                                value: this.storyBuilding,
+                                onChanged: (bool value) {
+                                  setState(() {
+                                    selected >= 5
+                                        ? value = false
+                                        : this.storyBuilding = value;
+                                    if (storyBuilding == true) {
+                                      choices.add('storyBuilding');
+                                      selected++;
+                                      print(choices);
+                                    } else
+                                      selected--;
+                                  });
+                                },
+                              ),
                             ),
+                            colour: selectBuilding == Building.storybuilding
+                                ? femaleCardColor = kActiveCardColour
+                                : femaleCardColor = kInactiveCardColour,
                           ),
-                          colour: selectBuilding == Building.storybuilding
-                              ? femaleCardColor = kActiveCardColour
-                              : femaleCardColor = kInactiveCardColour,
                         ),
                       ),
                     ],
@@ -271,33 +285,38 @@ class _SecondSurveyPageState extends State<SecondSurveyPage> {
                         ),
                       ),
                       Expanded(
-                        child: ReusableCard(
-                          cardChild: UsableColum(
-                            icon: Icons.house,
-                            child:
-                                SvgPicture.asset("assets/icons/bungalow.svg"),
-                            text: 'BUNGALOW',
-                            secondChild: Checkbox(
-                              checkColor: Colors.white,
-                              activeColor: Colors.blue,
-                              value: this.bungalow,
-                              onChanged: (bool value) {
-                                setState(() {
-                                  selected >= 5
-                                      ? value = false
-                                      : this.bungalow = value;
-                                  if (bungalow == true) {
-                                    choices.add('bungalow');
-                                    selected++;
-                                  } else
-                                    selected--;
-                                });
-                              },
+                        child: GestureDetector(
+                          onTap: () {
+                            bungalow == true;
+                          },
+                          child: ReusableCard(
+                            cardChild: UsableColum(
+                              icon: Icons.house,
+                              child:
+                                  SvgPicture.asset("assets/icons/bungalow.svg"),
+                              text: 'BUNGALOW',
+                              secondChild: Checkbox(
+                                checkColor: Colors.white,
+                                activeColor: Colors.blue,
+                                value: this.bungalow,
+                                onChanged: (bool value) {
+                                  setState(() {
+                                    selected >= 5
+                                        ? value = false
+                                        : this.bungalow = value;
+                                    if (bungalow == true) {
+                                      choices.add('bungalow');
+                                      selected++;
+                                    } else
+                                      selected--;
+                                  });
+                                },
+                              ),
                             ),
+                            colour: selectBuilding == Building.bungalow
+                                ? femaleCardColor = kActiveCardColour
+                                : femaleCardColor = kInactiveCardColour,
                           ),
-                          colour: selectBuilding == Building.bungalow
-                              ? femaleCardColor = kActiveCardColour
-                              : femaleCardColor = kInactiveCardColour,
                         ),
                       ),
                     ],
@@ -328,6 +347,22 @@ class _SecondSurveyPageState extends State<SecondSurveyPage> {
       ),
     );
   }
+  // SizedBox(
+  // width: getProportionateScreenHeight(0),
+  // height: getProportionateScreenHeight(50),
+  // child: FlatButton(
+  // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(39)),
+  // color: kPrimaryColor,
+  // onPressed: press,
+  // child: Text(
+  // text,
+  // style: TextStyle(
+  // fontSize: getProportionateScreenWidth(18),
+  // color: Colors.white,
+  // ),
+  // ),
+  // ),
+  // )
 
   _makePostRequest() async {
     SharedPreferences accesstoken = await SharedPreferences.getInstance();

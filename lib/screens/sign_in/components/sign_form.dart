@@ -29,6 +29,8 @@ class _SignFormState extends State<SignForm> {
   bool loading = false;
   String userId = "";
   String accessToken = "";
+  String authorization;
+  var isLoggedInTrue;
   final List<String> errors = [];
 
   void addError({String error}) {
@@ -60,16 +62,39 @@ class _SignFormState extends State<SignForm> {
   // user defined function
   @override
   void initState() {
-    getData();
+    userID();
+    stayLoggedIn();
+    authorizationToken();
+
     // TODO: implement initState
   }
 
-  void getData() async {
+  void stayLoggedIn() {
+    if (accessToken != true) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return CustomNavBar();
+          },
+        ),
+      );
+    }
+  }
+
+  void userID() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     SharedPreferences accesstoken = await SharedPreferences.getInstance();
     setState(() {
       userId = pref.getString('userId');
       accessToken = accesstoken.getString('accessToken');
+    });
+  }
+
+  void authorizationToken() async {
+    SharedPreferences accesstoken = await SharedPreferences.getInstance();
+    setState(() {
+      authorization = accesstoken.getString('accessToken');
     });
   }
 
@@ -232,10 +257,12 @@ class _SignFormState extends State<SignForm> {
     print(userId);
     print(accessToken);
     if (statusCode == 200) {
-      SharedPreferences accesstoken = await SharedPreferences.getInstance();
-      accesstoken.setString('accessToken', access_token);
+      SharedPreferences sp = await SharedPreferences.getInstance();
+      sp.setString('accessToken', access_token);
+
       setState(() {
         loading = true;
+        isLoggedInTrue = sp.setBool('isLoggedIn', true);
       });
       Navigator.push(
         context,

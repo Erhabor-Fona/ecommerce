@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shop_app/components/bottom_nav_bar.dart';
 import 'package:shop_app/constants.dart';
 import 'package:shop_app/screens/sign_in/sign_in_screen.dart';
 import 'package:shop_app/size_config.dart';
@@ -22,6 +23,7 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   int currentPage = 0;
   String authorization;
+  bool next;
   List<Map<String, String>> splashData = [
     {
       "text": "Welcome to Flat Mate, Let’s Find you a building!",
@@ -41,12 +43,33 @@ class _BodyState extends State<Body> {
   void initState() {
     // TODO: implement initState
     getData();
+    sk();
   }
 
   void getData() async {
     SharedPreferences accesstoken = await SharedPreferences.getInstance();
     setState(() {
       authorization = accesstoken.getString('accessToken');
+    });
+  }
+
+  void sk() {
+    if (next == true) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return CustomNavBar();
+          },
+        ),
+      );
+    }
+  }
+
+  Future<void> shared() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    setState(() {
+      sp.setBool('next', true);
     });
   }
 
@@ -91,6 +114,7 @@ class _BodyState extends State<Body> {
                     DefaultButton(
                       text: "Continue",
                       press: () {
+                        shared();
                         // makeGetRequestForProperties();
                         Navigator.pushNamed(context, SignInScreen.routeName);
                       },

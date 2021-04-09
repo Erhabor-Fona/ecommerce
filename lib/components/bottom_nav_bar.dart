@@ -8,6 +8,7 @@ import 'package:shop_app/screens/pledge/pledge.dart';
 import 'package:shop_app/screens/profile/profile_screen.dart';
 
 class CustomNavBar extends StatefulWidget {
+  static String routeName = "/bottom_nav_bar.dart";
   @override
   _CustomNavBarState createState() => _CustomNavBarState();
 }

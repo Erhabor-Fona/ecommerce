@@ -80,6 +80,7 @@ class ProductCard extends StatelessWidget {
                       // ),
                       child: SvgPicture.asset(
                         "assets/icons/visibility.svg",
+
                         // color: product.isFavourite
                         //     ? Color(0xFFFF4848)
                         //: Color(0xFFDBDEE4),
